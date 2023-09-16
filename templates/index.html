@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Latex Converter</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+
+<body>
+    <h2>Clipboard Image:</h2>
+    <div id="pasteArea" contenteditable="true" style="border: 1px solid black; width: 400px; height: 300px;"
+        onpaste="handlePaste(event)">
+        Paste the image here...
+    </div>
+    <img id="pastedImage" style="max-width: 300px; display: none;" />
+
+    <br>
+    <button onclick="convertImage()">Convert</button>
+
+    <h2>Converted LaTeX:</h2>
+    <textarea id="latex_code" rows="10" cols="50" readonly></textarea>
+    <button onclick="copyLatex()">Copy</button>
+
+    <h2>Rendered LaTeX:</h2>
+    <div id="rendered_latex"></div>
+
+    <script>
+        function handlePaste(event) {
+            let clipData = event.clipboardData || window.clipboardData;
+
+            if (!clipData) return;
+
+            let items = clipData.items;
+
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].type.indexOf("image") !== -1) {
+                    let blob = items[i].getAsFile();
+                    let reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        document.getElementById('pastedImage').src = e.target.result;
+                        document.getElementById('pastedImage').style.display = 'block';
+                    };
+                    reader.readAsDataURL(blob);
+                }
+            }
+        }
+
+        function convertImage() {
+            const imgElement = document.getElementById('pastedImage');
+            const imageData = imgElement.src.split(",")[1]; // 获取Base64编码的图片数据
+
+            fetch('/convert', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    image_data: imageData
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.latex_code) {
+                    // let parsed_latex = JSON.parse(data.latex_code); // 解析字符串
+                    // console.log(data.latex_code)
+                    document.getElementById('latex_code').value = data.latex_code;
+                    // document.getElementById('rendered_latex').innerText = parsed_latex;
+                    document.getElementById('rendered_latex').innerHTML = `\\[${data.latex_code}\\]`;
+
+
+                    MathJax.Hub.Queue(["Typeset", MathJax.Hub, "rendered_latex"]);
+                }
+            });
+        }
+
+        function copyLatex() {
+            const latexTextArea = document.getElementById('latex_code');
+            latexTextArea.select(); // 选择文本
+            document.execCommand('copy'); // 复制到剪贴板
+            alert("LaTeX code copied to clipboard!"); // 通知用户
+        }
+    </script>
+</body>
+
+</html>
