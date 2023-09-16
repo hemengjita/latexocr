@@ -7,8 +7,10 @@
 ## 1 启动ocr模型 
 默认8502端口，建议看https://github.com/lukas-blecher/LaTeX-OCR 文档，使用docker启动，很方便
 
-或者可以直接运行下面的代码，将会把后端模型跑出来
+或者可以直接运行下面的代码，把docker镜像后台运行
+
 docker pull lukasblecher/pix2tex:api
+
 docker run --rm -d -p 8502:8502 lukasblecher/pix2tex:api
 
 
