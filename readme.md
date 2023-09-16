@@ -5,12 +5,12 @@
 # 启动方式
 
 ## 1 启动ocr模型 
-默认8502端口，建议看https://github.com/lukas-blecher/LaTeX-OCR文档，使用docker启动，很方便
+默认8502端口，建议看https://github.com/lukas-blecher/LaTeX-OCR 文档，使用docker启动，很方便
 
 ## 2 启动webui 
 直接本地启动，默认8501端口
 
 
-#to do
+# to do
 * 优化ui界面
 * 发现图片大小越大，识别的准确率越高，后面需要改善一下，让输入模型前图片自动放大一些
